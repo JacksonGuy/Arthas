@@ -118,16 +118,24 @@ int main(int argc, char* argv[]) {
 
         // Sets cell pointer to specified location
         else if (c == '%') {
-            char pc = fgetc(fptr);
-            int pos = atoi(&pc);
+            int pos;
+            fscanf(fptr, "%d", &pos);
             ptr = pos;
         }
 
-        // Stores following number in current cell
+        // Stores following value in current cell
         else if (c == '=') {
-            int val;
-            fscanf(fptr, "%d", &val);
-            cells[ptr] = val;
+            char next = fgetc(fptr);
+            if (next == '\'') {
+                char ic = fgetc(fptr);
+                cells[ptr] = ic;
+            }
+            else {
+                fseek(fptr, -1, SEEK_CUR);
+                int val;
+                fscanf(fptr, "%d", &val);
+                cells[ptr] = val;
+            }
         }
 
         // Sets cell pointer to value of current cell
