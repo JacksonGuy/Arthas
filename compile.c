@@ -102,6 +102,17 @@ int main(int argc, char* argv[]) {
                 lc--;
             }
         }
+       
+        // Comments
+        else if (c == '/') {
+            char next = fgetc(fptr);
+            if (next == '/') {
+                while (next != EOF) {
+                    next = fgetc(fptr);
+                    if (next == '\n') break;
+                }
+            }
+        }
 
         // Changes compiler output mode.
         // This way, if we want to output integers, we
