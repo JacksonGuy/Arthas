@@ -115,6 +115,25 @@ int main(int argc, char* argv[]) {
                 output = CHAR;
             }
         }
+
+        // Sets cell pointer to specified location
+        else if (c == '%') {
+            char pc = fgetc(fptr);
+            int pos = atoi(&pc);
+            ptr = pos;
+        }
+
+        // Stores following number in current cell
+        else if (c == '=') {
+            int val;
+            fscanf(fptr, "%d", &val);
+            cells[ptr] = val;
+        }
+
+        // Sets cell pointer to value of current cell
+        else if (c == '&') {
+            ptr = cells[ptr];
+        }
     }
    
     fclose(fptr);
