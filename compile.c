@@ -14,9 +14,9 @@ typedef struct {
 } loop;
 
 typedef struct {
+    char* name;
     int start;
-    int size;
-} String;
+} func;
 
 enum outmode {
     INT,
@@ -30,8 +30,13 @@ int main(int argc, char* argv[]) {
 
     int cells[MAX] = {0};
     int ptr = 0;
+    
     loop* loops[MAX] = {NULL};
     int lc = 0;
+    
+    func* funcs[MAX] = {NULL};
+    int fc = 0;
+    int returnPos = 0;
 
     fptr = fopen(argv[1], "r");
     if (fptr == NULL) {
@@ -194,8 +199,69 @@ int main(int argc, char* argv[]) {
             }
             ptr++;
         }
+
+        else if (c == 'D') {
+            fseek(fptr, 1, SEEK_CUR); // Skip space
+           
+            int start = ftell(fptr);
+            char current;
+            while (current != ' ') {
+                current = fgetc(fptr);
+            }
+            int end = ftell(fptr) - 1;
+            int size = end - start;
+            char func_name[size];
+            fseek(fptr, start, SEEK_SET);
+            fscanf(fptr, "%s", func_name);
+       
+            // Create reference to function and
+            // add to function array.
+            //
+            // TODO this is very bad.
+            // We absolutely shouldn't be using an array for this,
+            // but right now a HashSet seems overkill.
+            fseek(fptr, end+1, SEEK_SET);
+            func* newFunc = malloc(sizeof(func));
+            newFunc->name = func_name;
+            newFunc->start = ftell(fptr);
+            funcs[fc] = newFunc;
+            fc++;
+
+            current = fgetc(fptr);
+            while (current != ';') {
+                current = fgetc(fptr);
+            }
+        }
+
+        else if (c == 'F') {
+            fseek(fptr, 1, SEEK_CUR); // Skip parenthesis
+            int start = ftell(fptr);
+            char current;
+            while (current != ')') {
+                current = fgetc(fptr);
+            }
+            int end = ftell(fptr);
+            int size = end - start;
+            char func_name[size];
+            fseek(fptr, start, SEEK_SET);
+            fgets(func_name, size, fptr);
+
+            for (int i = 0; i < fc; i++) {
+                func* f = funcs[i];
+                if (f->name == func_name) {
+                    fseek(fptr, funcs[i]->start, SEEK_SET);
+                    returnPos = end+1;
+                    break;
+                }
+            }
+        }
+
+        else if (c == ';') {
+            fseek(fptr, returnPos, SEEK_SET);
+            returnPos = 0;
+        }
     }
-   
+
     fclose(fptr);
     return 0;
 }
