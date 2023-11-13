@@ -83,6 +83,7 @@ I'll warn that the compiler is very picky about function declarations.
     <li> The code portion <b>must</b> end with a semicolon. </li>
 </ol><br>
 To call functions:<br>
+
 ```
 F(add_one)
 ```
