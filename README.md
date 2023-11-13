@@ -27,11 +27,12 @@ Example:<br>
 ### Goto cell value
 Moves the cell pointer to the value of the current cell.<br>
 Example:<br>
-<code>
+```
 %5=67 // Sets cell 5 to 67
 >=5 // Sets cell 6 to 5
 &. // Sets pointer to cell 5, then outputs its value (67)
-</code><br>
+```
+<br>
 
 ### Character values
 Good news! Now you don't need to remember every value of an ASCII table. We can now directly enter an ASCII character into a cell.<br>
@@ -68,4 +69,7 @@ to the position right after the last parenthesis (this is why you need the semic
 You now have the option of interpreting values in memory as regular integer numbers rather than ASCII characters.<br>
 To switch between ASCII and INT output modes, use the `@` command.<br>
 Example:<br>
-
+```
+=65 . // Outputs A
+@ .   // Outputs 65
+```
