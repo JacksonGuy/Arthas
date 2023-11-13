@@ -183,7 +183,7 @@ int main(int argc, char* argv[]) {
             fscanf(fptr, "%s", str);
 
             cells[ptr] = size;
-            cells[ptr+1] = ptr+2;
+            cells[ptr+1] = ptr+2; // TODO bad?
             ptr += 2;
             for (int i = 0; i < size; i++) {
                 if (str[i] == '\\') {
@@ -200,6 +200,7 @@ int main(int argc, char* argv[]) {
             ptr++;
         }
 
+        // Declares a new function.
         else if (c == 'D') {
             fseek(fptr, 1, SEEK_CUR); // Skip space
            
@@ -233,6 +234,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // Calls a function.
         else if (c == 'F') {
             fseek(fptr, 1, SEEK_CUR); // Skip parenthesis
             int start = ftell(fptr);
@@ -256,9 +258,17 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // Returns program to position after function all.
         else if (c == ';') {
             fseek(fptr, returnPos, SEEK_SET);
             returnPos = 0;
+        }
+
+        // Copies current cell value to specificied cell
+        else if (c == '*') {
+            int pos;
+            fscanf(fptr, "%d", &pos);
+            cells[pos] = cells[ptr];
         }
     }
 
