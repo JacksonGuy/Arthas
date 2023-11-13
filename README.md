@@ -1,2 +1,2 @@
-# Brainfuck
-A (slightly) modified Brainfuck compiler
+# Arthas
+A slightly more advanced Brainfuck-esque language.
