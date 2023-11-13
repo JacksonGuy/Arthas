@@ -13,6 +13,11 @@ typedef struct {
     int end;
 } loop;
 
+typedef struct {
+    int start;
+    int size;
+} String;
+
 enum outmode {
     INT,
     CHAR
@@ -152,6 +157,42 @@ int main(int argc, char* argv[]) {
         // Sets cell pointer to value of current cell
         else if (c == '&') {
             ptr = cells[ptr];
+        }
+
+        // Initialize String, starting at current cell.
+        // Declare example: S"Hello, World!"
+        // First cell: size
+        // Second cell: start address
+        // Rest: each char of string
+        else if (c == 'S') {
+            fseek(fptr, 1, SEEK_CUR); // Skip over first quote
+            int start = ftell(fptr);
+            char current;
+            while (current != '"') {
+                current = fgetc(fptr);
+            }
+            int end = ftell(fptr) - 1;
+            int size = end-start;
+            char str[size];
+            fseek(fptr, start, SEEK_SET);
+            fscanf(fptr, "%s", str);
+
+            cells[ptr] = size;
+            cells[ptr+1] = ptr+2;
+            ptr += 2;
+            for (int i = 0; i < size; i++) {
+                if (str[i] == '\\') {
+                    if (str[i+1] == 'n') {
+                        cells[ptr] = 10;
+                        ptr += 2;
+                    }
+                }
+                else {
+                    cells[ptr] = str[i];
+                    ptr++;
+                }
+            }
+            ptr++;
         }
     }
    
