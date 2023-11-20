@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) {
         // This way, if we want to output integers, we
         // don't have to go through the trouble of setting
         // the cell value to the ASCII code of that number.
-        else if (c == '@') {
+        else if (c == '!') {
             if (output == CHAR) {
                 output = INT;
             }
@@ -178,18 +178,26 @@ int main(int argc, char* argv[]) {
             }
             int end = ftell(fptr) - 1;
             int size = end-start;
+
             char str[size];
             fseek(fptr, start, SEEK_SET);
-            fscanf(fptr, "%s", str);
+            //fscanf(fptr, "%s", str);
+            fread(str, size, 1, fptr);
 
             cells[ptr] = size;
-            cells[ptr+1] = ptr+2; // TODO bad?
-            ptr += 2;
+            ptr++;
             for (int i = 0; i < size; i++) {
+                // Look for backslash
                 if (str[i] == '\\') {
+                    // Found '\n'
                     if (str[i+1] == 'n') {
                         cells[ptr] = 10;
-                        ptr += 2;
+                        ptr++;
+                        i++;
+                    }
+                    else {
+                        cells[ptr] = str[i];
+                        ptr++;
                     }
                 }
                 else {
@@ -197,7 +205,7 @@ int main(int argc, char* argv[]) {
                     ptr++;
                 }
             }
-            ptr++;
+            //ptr++;
         }
 
         // Declares a new function.
@@ -264,11 +272,18 @@ int main(int argc, char* argv[]) {
             returnPos = 0;
         }
 
-        // Copies current cell value to specificied cell
+        // Copies current cell value to specified cell
         else if (c == '*') {
             int pos;
             fscanf(fptr, "%d", &pos);
             cells[pos] = cells[ptr];
+        }
+
+        // Places the current cell number/address into the specified cell
+        else if (c == '@') {
+            int pos;
+            fscanf(fptr, "%d", &pos);
+            cells[pos] = ptr;
         }
     }
 

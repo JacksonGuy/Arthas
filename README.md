@@ -112,9 +112,18 @@ to the position right after the last parenthesis (this is why you need the semic
 
 ### Output modes
 You now have the option of interpreting values in memory as regular integer numbers rather than ASCII characters.<br>
-To switch between ASCII and INT output modes, use the `@` command.<br>
+To switch between ASCII and INT output modes, use the `!` command.<br>
 Example:<br>
 ```
 =65 . // Outputs A
-@ .   // Outputs 65
+! .   // Outputs 65
 ```
+<br>
+
+### Copy memory location
+To copy the current memory location to a specified location:
+<br>```
+%15=13 // Assigns 13 to cell 15
+@0     // Copys current location (15) to cell 0
+```
+<br>
