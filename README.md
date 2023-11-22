@@ -118,11 +118,12 @@ Example:<br>
 =65 . // Outputs A
 ! .   // Outputs 65
 ```
-<br>
+<br><br>
 
 ### Copy memory location
 To copy the current memory location to a specified location:
-<br>```
+<br>
+```
 %15=13 // Assigns 13 to cell 15
 @0     // Copys current location (15) to cell 0
 ```
