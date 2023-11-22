@@ -1,14 +1,14 @@
 // Fibonacci program in Arthas
+// Jackson Frey
 
-! // Change output mode
+!           // Change output mode
 
-%3 = 25 // How many numbers to calculate (from 0)
-       // For example, if you want 10 numbers, put 9
+%3 = 25     // How many numbers to calculate (from 0)
+            // For example, if you want 10 numbers, put 9
 
-%4 = 32 // Space Character (for printing)
+%4 = 32     // Space Character (for printing)
 
-// Starting number for fibonacci
-%5 = 0
+%5 = 0      // Starting number for fibonacci
 %6 = 1
 
 // Sums cells 5 and 6, result stored in cell 8
@@ -21,6 +21,6 @@ D fib [ F(add) %6*5 %8.*6 %4!.!<-];
 %5. %4!.! 
 %6. %4!.!
 
-F(fib) // Calculate
+F(fib) 
 
-%0=10!. // Newline on finish
+%0=10!.     // Newline on finish
