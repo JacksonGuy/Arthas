@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX 128
 
@@ -24,6 +25,13 @@ enum outmode {
 };
 
 int main(int argc, char* argv[]) {
+    int debug = 0;
+    if (argc > 2) {
+        if (strcmp(argv[2], "-debug") == 0) {
+            debug = 1;
+        }
+    }
+
     FILE* fptr;
 
     enum outmode output = CHAR;
@@ -34,9 +42,11 @@ int main(int argc, char* argv[]) {
     loop* loops[MAX] = {NULL};
     int lc = 0;
     
-    func* funcs[MAX] = {NULL};
+    func* funcs[MAX];
     int fc = 0;
-    int returnPos = 0;
+
+    int returns[MAX];
+    int layer = 0;
 
     fptr = fopen(argv[1], "r");
     if (fptr == NULL) {
@@ -46,6 +56,8 @@ int main(int argc, char* argv[]) {
 
     while (!feof(fptr)) {
         char c = fgetc(fptr);
+
+        if (debug) printf("Current Position: %ld\n", ftell(fptr));
 
         if (c == '>') {
             if (ptr < MAX) {
@@ -205,30 +217,27 @@ int main(int argc, char* argv[]) {
                     ptr++;
                 }
             }
-            //ptr++;
         }
 
         // Declares a new function.
         else if (c == 'D') {
             fseek(fptr, 1, SEEK_CUR); // Skip space
            
+            // Get the Function Name -------
             int start = ftell(fptr);
             char current;
             while (current != ' ') {
                 current = fgetc(fptr);
             }
-            int end = ftell(fptr) - 1;
+            int end = ftell(fptr);
             int size = end - start;
-            char func_name[size];
+            char* func_name = malloc(size);
             fseek(fptr, start, SEEK_SET);
-            fscanf(fptr, "%s", func_name);
-       
+            fgets(func_name, size, fptr);
+            // -----------------------------
+      
             // Create reference to function and
             // add to function array.
-            //
-            // TODO this is very bad.
-            // We absolutely shouldn't be using an array for this,
-            // but right now a HashSet seems overkill.
             fseek(fptr, end+1, SEEK_SET);
             func* newFunc = malloc(sizeof(func));
             newFunc->name = func_name;
@@ -236,6 +245,9 @@ int main(int argc, char* argv[]) {
             funcs[fc] = newFunc;
             fc++;
 
+            if (debug) printf("Function Start: %d\n", newFunc->start);
+
+            // Skip to the end of the defined function
             current = fgetc(fptr);
             while (current != ';') {
                 current = fgetc(fptr);
@@ -245,31 +257,46 @@ int main(int argc, char* argv[]) {
         // Calls a function.
         else if (c == 'F') {
             fseek(fptr, 1, SEEK_CUR); // Skip parenthesis
+            
+            // Get Function Name ----------
             int start = ftell(fptr);
-            char current;
+            char current = fgetc(fptr);
             while (current != ')') {
                 current = fgetc(fptr);
             }
             int end = ftell(fptr);
             int size = end - start;
-            char func_name[size];
+            char* func_name = malloc(size);
             fseek(fptr, start, SEEK_SET);
             fgets(func_name, size, fptr);
+            // ----------------------------
 
             for (int i = 0; i < fc; i++) {
                 func* f = funcs[i];
-                if (f->name == func_name) {
-                    fseek(fptr, funcs[i]->start, SEEK_SET);
-                    returnPos = end+1;
+
+                if (!strcmp(f->name, func_name)) {
+                    // Functions are ran JIT.
+                    // We literally just move the file pointer
+                    // back to the position in the file where the 
+                    // function was defined, and run that code.
+                    
+                    layer++;
+                    returns[layer] = end;
+                    fseek(fptr, f->start, SEEK_SET);
+                    fseek(fptr, -1, SEEK_CUR);
                     break;
                 }
             }
+
+            free(func_name);
         }
 
         // Returns program to position after function all.
         else if (c == ';') {
-            fseek(fptr, returnPos, SEEK_SET);
-            returnPos = 0;
+            fseek(fptr, returns[layer], SEEK_SET);
+            returns[layer] = 0;
+            layer--;
+            if (debug) printf("Return Position: %ld\n", ftell(fptr));
         }
 
         // Copies current cell value to specified cell
